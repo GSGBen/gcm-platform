@@ -1,0 +1,27 @@
+name: Deploy
+
+on: [workflow_dispatch]
+
+jobs:
+  bicep_tenant_deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: OIDC Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          enable-AzPSSession: true
+
+      - name: Az CLI Deploy Management Groups
+        id: create_mgs
+        shell: bash
+        run: |
+          az deployment tenant create --template-file src/managementGroups.bicep --name create_mgs-${{ env.runNumber }}

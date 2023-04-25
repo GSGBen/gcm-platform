@@ -1,0 +1,36 @@
+name: Show effects of deployment
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  bicep_tenant_deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: OIDC Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          enable-AzPSSession: true
+
+      # have to use the CLI here because the native github action doesn't support tenant-scoped deployments
+      - name: Az CLI Deploy Management Groups
+        id: create_mgs
+        shell: bash
+        run: |
+            az deployment tenant what-if --template-file src/managementGroups.bicep --name test_create_mgs-${{ github.run_number }}
