@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  bicep_tenant_deploy:
+  bicep_tenant_test_deploy:
     runs-on: ubuntu-latest
     environment: prod
     steps:
@@ -29,8 +29,8 @@ jobs:
           enable-AzPSSession: true
 
       # have to use the CLI here because the native github action doesn't support tenant-scoped deployments
-      - name: Az CLI Deploy Management Groups
-        id: create_mgs
+      - name: Az CLI What-If Deploy Management Groups
+        id: test_create_mgs
         shell: bash
         run: |
             az deployment tenant what-if \
