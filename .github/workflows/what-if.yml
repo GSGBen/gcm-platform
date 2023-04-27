@@ -41,6 +41,8 @@ jobs:
 
       - name: attach output to pull request
         uses: actions/github-script@v3
+        env:
+          BODY: ${{ join(steps.test_create_mgs.outputs.*, '\n') }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -48,7 +50,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "${{ join(steps.test_create_mgs.outputs.*, '\n') }}"
+              body: process.env.BODY
             })
       
 
