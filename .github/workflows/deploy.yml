@@ -8,7 +8,7 @@ jobs:
     environment: prod
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -24,4 +24,7 @@ jobs:
         id: create_mgs
         shell: bash
         run: |
-          az deployment tenant create --template-file src/managementGroups.bicep --name create_mgs-${{ env.runNumber }}
+          az deployment tenant create \
+            --template-file src/managementGroups.bicep \
+            --name test_create_mgs-${{ github.run_number }} \
+            --location "Australia East

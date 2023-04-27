@@ -11,12 +11,12 @@ permissions:
   contents: read
 
 jobs:
-  bicep_tenant_deploy:
+  bicep_tenant_test_deploy:
     runs-on: ubuntu-latest
     environment: prod
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -29,8 +29,14 @@ jobs:
           enable-AzPSSession: true
 
       # have to use the CLI here because the native github action doesn't support tenant-scoped deployments
-      - name: Az CLI Deploy Management Groups
-        id: create_mgs
+      - name: Az CLI What-If Deploy Management Groups
+        id: test_create_mgs
         shell: bash
         run: |
-            az deployment tenant what-if --template-file src/managementGroups.bicep --name test_create_mgs-${{ github.run_number }}
+          OUTPUT=$(az deployment tenant what-if \
+            --template-file src/managementGroups.bicep \
+            --name test_create_mgs-${{ github.run_number }} \
+            --location "Australia East")
+          echo $OUTPUT >> $GITHUB_STEP_SUMMARY
+      
+

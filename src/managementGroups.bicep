@@ -7,7 +7,7 @@ module baseline_managementgroups 'modules/managementGroups.bicep' = {
   name: 'baseline-alz-managementGroups'
   params: {
     // no parTopLevelManagementGroupParentId, deploy under tenant root group
-    parTopLevelManagementGroupPrefix: 'GCM'
+    parTopLevelManagementGroupPrefix: 'GSM'
     parTopLevelManagementGroupDisplayName: 'Azure Landing Zones'
     parLandingZoneMgAlzDefaultsEnable: true
     parLandingZoneMgConfidentialEnable: false
