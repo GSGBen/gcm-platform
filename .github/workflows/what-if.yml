@@ -37,7 +37,7 @@ jobs:
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
             --location "Australia East")
-          echo $OUTPUT
-          echo $OUTPUT >> $GITHUB_STEP_SUMMARY
+          echo -e $OUTPUT
+          echo -e $OUTPUT >> $GITHUB_STEP_SUMMARY
       
 
