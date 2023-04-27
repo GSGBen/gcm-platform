@@ -33,7 +33,10 @@ jobs:
         id: test_create_mgs
         shell: bash
         run: |
-            az deployment tenant what-if \
-              --template-file src/managementGroups.bicep \
-              --name test_create_mgs-${{ github.run_number }} \
-              --location "Australia East"
+          OUTPUT=$(az deployment tenant what-if \
+            --template-file src/managementGroups.bicep \
+            --name test_create_mgs-${{ github.run_number }} \
+            --location "Australia East")
+          echo $OUTPUT >> $GITHUB_STEP_SUMMARY
+      
+
