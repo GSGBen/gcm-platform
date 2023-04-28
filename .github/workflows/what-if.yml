@@ -42,7 +42,7 @@ jobs:
       - name: attach output to pull request
         uses: actions/github-script@v3
         env:
-          BODY: ${{ steps.test_create_mgs.outputs.stdout }}
+          BODY: test # ${{ steps.test_create_mgs.outputs.stdout }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
