@@ -38,15 +38,15 @@ jobs:
         #   see https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
         # - fix up the \r / carriage return / ^M characters the pretty-printed output shows
         run: |
-          OUTPUT=$(az deployment tenant what-if \
+          az deployment tenant what-if \
                     --template-file src/managementGroups.bicep \
                     --name test_create_mgs-${{ github.run_number }} \
                     --location "Australia East" \
-                  | tr '\r' '\n')
-          echo $OUTPUT
+                  | tr '\r' '\n' > temp_output.txt
+          cat temp_output.txt
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "OUTPUT<<$EOF" >> "$GITHUB_OUTPUT"
-          echo $OUTPUT >> "$GITHUB_OUTPUT"
+          cat temp_output.txt >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
       - name: attach output to pull request
@@ -60,7 +60,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: process.env.BODY
+              body: "```\n" + process.env.BODY + "\n```"
             })
       
 
