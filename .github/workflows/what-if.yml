@@ -34,22 +34,23 @@ jobs:
         id: test_create_mgs
         shell: bash
         # extra code to:
-        # - store the multiline output and retrieve it later.
-        #   see https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-        # - fix up the \r / carriage return / ^M characters the pretty-printed output shows
+        # - store the multiline output and retrieve it later. see
+        #   https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        # - fix up the \r / carriage return / ^M characters the pretty-printed output
+        #   shows. Files work with linebreaks, Variables don't seem to.
         run: |
           az deployment tenant what-if \
-                    --template-file src/managementGroups.bicep \
-                    --name test_create_mgs-${{ github.run_number }} \
-                    --location "Australia East" \
-                  | tr '\r' '\n' > temp_output.txt
+            --template-file src/managementGroups.bicep \
+            --name test_create_mgs-${{ github.run_number }} \
+            --location "Australia East" \
+            | tr '\r' '\n' > temp_output.txt
           cat temp_output.txt
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "OUTPUT<<$EOF" >> "$GITHUB_OUTPUT"
           cat temp_output.txt >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
-      - name: attach output to pull request
+      - name: attach management group output to pull request
         uses: actions/github-script@v3
         env:
           BODY: ${{ steps.test_create_mgs.outputs.OUTPUT }}
@@ -60,7 +61,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "```\n" + process.env.BODY + "\n```"
+              body: "Management Group changes:\n```\n" + process.env.BODY + "\n```"
             })
       
 
