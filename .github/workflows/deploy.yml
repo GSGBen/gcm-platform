@@ -7,6 +7,10 @@ on:
       # note: merging check is below in the jobs
       - closed
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   bicep_tenant_deploy:
     runs-on: ubuntu-latest
