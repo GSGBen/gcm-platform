@@ -1,11 +1,17 @@
 name: Deploy
 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch: {}
+  pull_request:
+    types:
+      # note: merging check is below in the jobs
+      - closed
 
 jobs:
   bicep_tenant_deploy:
     runs-on: ubuntu-latest
     environment: prod
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -27,4 +33,4 @@ jobs:
           az deployment tenant create \
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
-            --location "Australia East
+            --location "Australia East"
