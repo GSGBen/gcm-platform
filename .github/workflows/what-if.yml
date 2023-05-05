@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 
 env:
-  ManagementGroupPrefix: "GCM"
+  managementGroupPrefix: "GCM"
   location: "Australia East"
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
           az deployment tenant what-if \
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
-            --location "${{ env.Location }}" \
+            --location "$location" \
             | pipeline/github_output.sh
 
       # use the CLI from here on as well because the native action doesn't give us all
@@ -58,10 +58,10 @@ jobs:
           az deployment managementgroup what-if \
             --template-file src/customPolicyDefinitions.bicep \
             --name test_create_policy_defs-${{ github.run_number }} \
-            --location "${{ env.Location }}" \
+            --location "$location" \
             --what-if-result-format ResourceIdOnly \
             --parameters \
-              managementGroupId=${{ env.ManagementGroupPrefix }} \
+              managementGroupId="$managementGroupPrefix" \
             | pipeline/github_output.sh
 
       - name: attach output to pull request
