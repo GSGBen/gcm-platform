@@ -11,6 +11,10 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  ManagementGroupPrefix: "GCM"
+  location: "Australia East"
+
 jobs:
   bicep_tenant_test_deploy:
     runs-on: ubuntu-latest
@@ -42,21 +46,32 @@ jobs:
           az deployment tenant what-if \
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
-            --location "Australia East" \
-            | tr '\r' '\n' > temp_output.txt
-          # display in this step
-          cat temp_output.txt
-          # make available to lower steps
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "OUTPUT<<$EOF" >> "$GITHUB_OUTPUT"
-          cat temp_output.txt >> "$GITHUB_OUTPUT"
-          echo "$EOF" >> "$GITHUB_OUTPUT"
+            --location ${{ env.Location }} \
+            | pipeline/github_output.sh
 
-      - name: attach management group output to pull request
+      # use the CLI from here on as well because the native action doesn't give us all
+      # CLI output
+      - name: Az CLI What-If Deploy Custom Policy Definitions
+        id: test_create_policy_defs
+        shell: bash
+        run: |
+          az deployment managementgroup what-if \
+            --template-file src/customPolicyDefinitions.bicep \
+            --name test_create_policy_defs-${{ github.run_number }} \
+            --location ${{ env.Location }} \
+            --what-if-result-format ResourceIdOnly \
+            --parameters \
+              managementGroupId=${{ env.ManagementGroupPrefix }} \
+            | pipeline/github_output.sh
+
+      - name: attach output to pull request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v3
         env:
-          BODY: ${{ steps.test_create_mgs.outputs.OUTPUT }}
+          BODY: |
+            ${{ steps.test_create_mgs.outputs.OUTPUT }}
+
+            ${{ steps.test_create_policy_defs.outputs.OUTPUT }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
