@@ -60,7 +60,7 @@ jobs:
             --name test_create_policy_defs-${{ github.run_number }} \
             --location "$location" \
             --what-if-result-format ResourceIdOnly \
-            -- management-group-id "$managementGroupPrefix" \
+            --management-group-id "$managementGroupPrefix" \
             | pipeline/github_output.sh
 
       - name: attach output to pull request
