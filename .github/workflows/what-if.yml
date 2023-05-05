@@ -46,7 +46,7 @@ jobs:
           az deployment tenant what-if \
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
-            --location ${{ env.Location }} \
+            --location "${{ env.Location }}" \
             | pipeline/github_output.sh
 
       # use the CLI from here on as well because the native action doesn't give us all
@@ -58,7 +58,7 @@ jobs:
           az deployment managementgroup what-if \
             --template-file src/customPolicyDefinitions.bicep \
             --name test_create_policy_defs-${{ github.run_number }} \
-            --location ${{ env.Location }} \
+            --location "${{ env.Location }}" \
             --what-if-result-format ResourceIdOnly \
             --parameters \
               managementGroupId=${{ env.ManagementGroupPrefix }} \
