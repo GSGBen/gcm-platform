@@ -55,7 +55,7 @@ jobs:
         id: test_create_policy_defs
         shell: bash
         run: |
-          az deployment managementgroup what-if \
+          az deployment mg what-if \
             --template-file src/customPolicyDefinitions.bicep \
             --name test_create_policy_defs-${{ github.run_number }} \
             --location "$location" \
