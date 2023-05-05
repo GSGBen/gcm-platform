@@ -18,5 +18,5 @@ if [ -p /dev/stdin ]; then
     EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
     echo "OUTPUT<<$EOF" >> "$GITHUB_OUTPUT"
     cat temp_output.txt >> "$GITHUB_OUTPUT"
-    echo "$EOF" >> "$GITHUB_OUTPUT"T"
+    echo "$EOF" >> "$GITHUB_OUTPUT"
 fi
