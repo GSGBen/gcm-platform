@@ -59,7 +59,7 @@ jobs:
             --template-file src/customPolicyDefinitions.bicep \
             --name test_create_policy_defs-${{ github.run_number }} \
             --location "$location" \
-            --what-if-result-format ResourceIdOnly \
+            --result-format ResourceIdOnly \
             --management-group-id "$managementGroupPrefix" \
             | pipeline/github_output.sh
 
