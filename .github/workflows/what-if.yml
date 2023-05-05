@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
 
 env:
-  managementGroupPrefix: "GCM"
+  managementGroupPrefix: "GSM"
   location: "Australia East"
 
 jobs:
