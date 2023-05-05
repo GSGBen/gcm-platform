@@ -68,9 +68,17 @@ jobs:
         uses: actions/github-script@v3
         env:
           BODY: |
-            ${{ steps.test_create_mgs.outputs.OUTPUT }}
+            Management Group changes:
 
+            ```
+            ${{ steps.test_create_mgs.outputs.OUTPUT }}
+            ```
+            Policy definition changes:
+
+            ```
             ${{ steps.test_create_policy_defs.outputs.OUTPUT }}
+            ```
+            
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -78,7 +86,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Management Group changes:\n```\n" + process.env.BODY + "\n```"
+              body: process.env.BODY
             })
       
 
