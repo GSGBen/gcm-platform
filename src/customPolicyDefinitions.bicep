@@ -4,7 +4,7 @@ targetScope = 'managementGroup'
 
 @description('Baseline resource configuration')
 module baseline_policy 'modules/customPolicyDefinitions.bicep' = {
-  name: 'minimum policy'
+  name: 'baseline-alz-policy'
   params: {
     parTargetManagementGroupId: 'GSM'
   }
