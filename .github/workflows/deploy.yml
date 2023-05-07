@@ -13,6 +13,10 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  managementGroupPrefix: "GSM"
+  location: "Australia East"
+
 jobs:
   bicep_tenant_deploy:
     runs-on: ubuntu-latest
@@ -39,4 +43,14 @@ jobs:
           az deployment tenant create \
             --template-file src/managementGroups.bicep \
             --name test_create_mgs-${{ github.run_number }} \
-            --location "Australia East"
+            --location "$location"
+
+      - name: Az CLI What-If Deploy Custom Policy Definitions
+        id: test_create_policy_defs
+        shell: bash
+        run: |
+          az deployment mg create \
+            --template-file src/customPolicyDefinitions.bicep \
+            --name create_policy_defs-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix"
