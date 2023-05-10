@@ -63,6 +63,17 @@ jobs:
             --management-group-id "$managementGroupPrefix" \
             | pipeline/github_output.sh
 
+      - name: Az CLI What-If Deploy Custom Role Definitions
+        id: test_create_role_defs
+        shell: bash
+        run: |
+          az deployment mg what-if \
+            --template-file src/customRoleDefinitions.bicep \
+            --name test_create_role_defs-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix" \
+            | pipeline/github_output.sh
+
       - name: attach output to pull request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v3
@@ -77,6 +88,14 @@ jobs:
 
             ```
             ${{ steps.test_create_policy_defs.outputs.OUTPUT }}
+            
+            ```
+
+            Role definition changes:
+
+            ```
+            ${{ steps.test_create_role_defs.outputs.OUTPUT }}
+            
             ```
             
         with:

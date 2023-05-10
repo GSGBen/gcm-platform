@@ -54,3 +54,13 @@ jobs:
             --name create_policy_defs-${{ github.run_number }} \
             --location "$location" \
             --management-group-id "$managementGroupPrefix"
+
+      - name: Az CLI What-If Deploy Custom Role Definitions
+        id: test_create_role_defs
+        shell: bash
+        run: |
+          az deployment mg create \
+            --template-file src/customRoleDefinitions.bicep \
+            --name create_role_defs-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix"
