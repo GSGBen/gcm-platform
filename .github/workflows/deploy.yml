@@ -16,7 +16,7 @@ permissions:
 env:
   managementGroupPrefix: "GSM"
   location: "Australia East"
-  managementSubscriptionID: "xxx"
+  # MANAGEMENT_SUBSCRIPTION_ID stored in github environment
 
 jobs:
   bicep_tenant_deploy:
@@ -46,7 +46,7 @@ jobs:
             --name create_mgs-${{ github.run_number }} \
             --location "$location"
 
-      - name: Az CLI What-If Deploy Custom Policy Definitions
+      - name: Az CLI Deploy Custom Policy Definitions
         id: create_policy_defs
         shell: bash
         run: |
@@ -56,7 +56,7 @@ jobs:
             --location "$location" \
             --management-group-id "$managementGroupPrefix"
 
-      - name: Az CLI What-If Deploy Custom Role Definitions
+      - name: Az CLI Deploy Custom Role Definitions
         id: create_role_defs
         shell: bash
         run: |
@@ -66,11 +66,11 @@ jobs:
             --location "$location" \
             --management-group-id "$managementGroupPrefix"
 
-      - name: Az CLI What-If Deploy Logging
+      - name: Az CLI Deploy Logging
         id: create_logging
         shell: bash
         run: |
-          az deployment mg create \
+          az deployment sub create \
             --template-file src/logging.bicep \
             --name create_logging-${{ github.run_number }} \
             --location "$location" \
