@@ -20,7 +20,7 @@ module baseline_logging 'modules/logging.bicep' = {
     parLogAnalyticsWorkspaceLocation: location
     parAutomationAccountLocation: location
     parLogAnalyticsWorkspaceName: '${prefix}-log-analytics'
-    parLogAnalyticsWorkspaceSkuName: 'Free'
+    parLogAnalyticsWorkspaceSkuName: 'PerGB2018'
     parAutomationAccountName: '${prefix}-automation-account'
   }
 }
