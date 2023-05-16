@@ -85,6 +85,20 @@ jobs:
             --location "$location" \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
             | pipeline/github_output.sh
+
+      - name: Az CLI What-If Deploy Management Group Diagnostic Settings
+        id: test_create_mg_diag
+        shell: bash
+        run: |
+          # log analytics workspace ID is a placeholder - no previous value to pull at
+          # this stage
+          az deployment mg what-if \
+            --template-file src/mgDiagSettings.bicep \
+            --name test_create_mg_diag-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix" \
+            --parameters parLogAnalyticsWorkspaceResourceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+            | pipeline/github_output.sh
             
       - name: attach output to pull request
         if: github.event_name == 'pull_request'
@@ -114,6 +128,13 @@ jobs:
 
             ```
             ${{ steps.test_create_logging.outputs.OUTPUT }}
+            
+            ```
+
+            Management Group Diagnostic Settings changes:
+
+            ```
+            ${{ steps.test_create_mg_diag.outputs.OUTPUT }}
             
             ```
             

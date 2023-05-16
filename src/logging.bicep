@@ -24,3 +24,5 @@ module baseline_logging 'modules/logging.bicep' = {
     parAutomationAccountName: '${prefix}-automation-account'
   }
 }
+
+output outLogAnalyticsWorkspaceId string = baseline_logging.outputs.outLogAnalyticsWorkspaceId

@@ -75,3 +75,20 @@ jobs:
             --name create_logging-${{ github.run_number }} \
             --location "$location" \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
+
+      - name: Az CLI Deploy Management Group Diagnostic Settings
+        id: create_mg_diag
+        shell: bash
+        run: |
+          # get the ID of the workspace deployed in the previous step
+          $LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
+            --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
+            --name test_create_logging \
+            --query properties.outputs.outLogAnalyticsWorkspaceId.value)
+
+          az deployment mg create \
+            --template-file src/mgDiagSettings.bicep \
+            --name create_mg_diag-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix" \
+            --parameters parLogAnalyticsWorkspaceResourceId=$LOG_ANALYTICS_WORKSPACE_ID
