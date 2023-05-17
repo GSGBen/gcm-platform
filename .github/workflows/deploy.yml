@@ -81,7 +81,7 @@ jobs:
         shell: bash
         run: |
           # get the ID of the workspace deployed in the previous step
-          $LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
+          LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
             --name create_logging-${{ github.run_number }} \
             --query properties.outputs.outLogAnalyticsWorkspaceId.value)
