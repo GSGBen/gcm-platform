@@ -80,11 +80,12 @@ jobs:
         id: create_mg_diag
         shell: bash
         run: |
-          # get the ID of the workspace deployed in the previous step
+          # get the ID of the workspace deployed in the previous step. have to remove quotes
+          # because in the next step `--parameters` doesn't automatically do it.
           LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
             --name create_logging-${{ github.run_number }} \
-            --query properties.outputs.outLogAnalyticsWorkspaceId.value)
+            --query properties.outputs.outLogAnalyticsWorkspaceId.value | tr -d '"')
 
           az deployment mg create \
             --template-file src/mgDiagSettings.bicep \
