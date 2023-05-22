@@ -15,6 +15,7 @@ env:
   managementGroupPrefix: "GSM"
   location: "Australia East"
   # MANAGEMENT_SUBSCRIPTION_ID stored in github environment
+  # CONNECTIVITY_SUBSCRIPTION_ID stored in github environment
 
 jobs:
   bicep_tenant_test_deploy:
@@ -99,7 +100,18 @@ jobs:
             --management-group-id "$managementGroupPrefix" \
             --parameters parLogAnalyticsWorkspaceResourceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
             | pipeline/github_output.sh
-            
+
+      - name: Az CLI What-If Deploy Hub Networking
+        id: test_create_hub_networking
+        shell: bash
+        run: |
+          az deployment sub what-if \
+            --template-file src/hubNetworking.bicep \
+            --name test_create_hub_networking-${{ github.run_number }} \
+            --location "$location" \
+            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID" \
+            | pipeline/github_output.sh
+
       - name: attach output to pull request
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v3
@@ -135,6 +147,13 @@ jobs:
 
             ```
             ${{ steps.test_create_mg_diag.outputs.OUTPUT }}
+            
+            ```
+
+            Hub Networking changes:
+
+            ```
+            ${{ steps.test_create_hub_networking.outputs.OUTPUT }}
             
             ```
             

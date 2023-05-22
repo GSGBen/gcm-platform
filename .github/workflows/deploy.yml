@@ -17,6 +17,7 @@ env:
   managementGroupPrefix: "GSM"
   location: "Australia East"
   # MANAGEMENT_SUBSCRIPTION_ID stored in github environment
+  # CONNECTIVITY_SUBSCRIPTION_ID stored in github environment
 
 jobs:
   bicep_tenant_deploy:
@@ -75,6 +76,16 @@ jobs:
             --name create_logging-${{ github.run_number }} \
             --location "$location" \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
+
+      - name: Az CLI Deploy Hub Networking
+        id: create_hub_networking
+        shell: bash
+        run: |
+          az deployment sub what-if \
+            --template-file src/hubNetworking.bicep \
+            --name create_hub_networking-${{ github.run_number }} \
+            --location "$location" \
+            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
 
       - name: Az CLI Deploy Management Group Diagnostic Settings
         id: create_mg_diag
