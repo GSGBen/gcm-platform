@@ -77,16 +77,6 @@ jobs:
             --location "$location" \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
 
-      - name: Az CLI Deploy Hub Networking
-        id: create_hub_networking
-        shell: bash
-        run: |
-          az deployment sub what-if \
-            --template-file src/hubNetworking.bicep \
-            --name create_hub_networking-${{ github.run_number }} \
-            --location "$location" \
-            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
-
       - name: Az CLI Deploy Management Group Diagnostic Settings
         id: create_mg_diag
         shell: bash
@@ -104,3 +94,13 @@ jobs:
             --location "$location" \
             --management-group-id "$managementGroupPrefix" \
             --parameters parLogAnalyticsWorkspaceResourceId=$LOG_ANALYTICS_WORKSPACE_ID
+
+      - name: Az CLI Deploy Hub Networking
+        id: create_hub_networking
+        shell: bash
+        run: |
+          az deployment sub create \
+            --template-file src/hubNetworking.bicep \
+            --name create_hub_networking-${{ github.run_number }} \
+            --location "$location" \
+            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
