@@ -14,8 +14,8 @@ permissions:
 env:
   managementGroupPrefix: "GSM"
   location: "Australia East"
-  # MANAGEMENT_SUBSCRIPTION_ID stored in github environment
-  # CONNECTIVITY_SUBSCRIPTION_ID stored in github environment
+  MANAGEMENT_SUBSCRIPTION_ID: ${{ vars.MANAGEMENT_SUBSCRIPTION_ID }}
+  CONNECTIVITY_SUBSCRIPTION_ID: ${{ vars.CONNECTIVITY_SUBSCRIPTION_ID }}
 
 jobs:
   bicep_tenant_test_deploy:
@@ -82,7 +82,7 @@ jobs:
         run: |
           echo "$MANAGEMENT_SUBSCRIPTION_ID"
           echo $MANAGEMENT_SUBSCRIPTION_ID
-          az account set --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
+          #az account set --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
 
           az deployment sub what-if \
             --template-file src/logging.bicep \
