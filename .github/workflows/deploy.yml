@@ -40,71 +40,69 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           enable-AzPSSession: true
 
-      # - name: Az CLI Deploy Management Groups
-      #   id: create_mgs
-      #   shell: bash
-      #   run: |
-      #     az deployment tenant create \
-      #       --template-file src/managementGroups.bicep \
-      #       --name create_mgs-${{ github.run_number }} \
-      #       --location "$location"
+      - name: Az CLI Deploy Management Groups
+        id: create_mgs
+        shell: bash
+        run: |
+          az deployment tenant create \
+            --template-file src/managementGroups.bicep \
+            --name create_mgs-${{ github.run_number }} \
+            --location "$location"
 
-      # - name: Az CLI Deploy Custom Policy Definitions
-      #   id: create_policy_defs
-      #   shell: bash
-      #   run: |
-      #     az deployment mg create \
-      #       --template-file src/customPolicyDefinitions.bicep \
-      #       --name create_policy_defs-${{ github.run_number }} \
-      #       --location "$location" \
-      #       --management-group-id "$managementGroupPrefix"
+      - name: Az CLI Deploy Custom Policy Definitions
+        id: create_policy_defs
+        shell: bash
+        run: |
+          az deployment mg create \
+            --template-file src/customPolicyDefinitions.bicep \
+            --name create_policy_defs-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix"
 
-      # - name: Az CLI Deploy Custom Role Definitions
-      #   id: create_role_defs
-      #   shell: bash
-      #   run: |
-      #     az deployment mg create \
-      #       --template-file src/customRoleDefinitions.bicep \
-      #       --name create_role_defs-${{ github.run_number }} \
-      #       --location "$location" \
-      #       --management-group-id "$managementGroupPrefix"
+      - name: Az CLI Deploy Custom Role Definitions
+        id: create_role_defs
+        shell: bash
+        run: |
+          az deployment mg create \
+            --template-file src/customRoleDefinitions.bicep \
+            --name create_role_defs-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix"
 
       - name: Az CLI Deploy Logging
         id: create_logging
         shell: bash
         run: |
-          echo $MANAGEMENT_SUBSCRIPTION_ID
-
           az deployment sub create \
             --template-file src/logging.bicep \
             --name create_logging-${{ github.run_number }} \
             --location "$location" \
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
 
-      # - name: Az CLI Deploy Management Group Diagnostic Settings
-      #   id: create_mg_diag
-      #   shell: bash
-      #   run: |
-      #     # get the ID of the workspace deployed in the previous step. have to remove quotes
-      #     # because in the next step `--parameters` doesn't automatically do it.
-      #     LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
-      #       --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
-      #       --name create_logging-${{ github.run_number }} \
-      #       --query properties.outputs.outLogAnalyticsWorkspaceId.value | tr -d '"')
+      - name: Az CLI Deploy Management Group Diagnostic Settings
+        id: create_mg_diag
+        shell: bash
+        run: |
+          # get the ID of the workspace deployed in the previous step. have to remove quotes
+          # because in the next step `--parameters` doesn't automatically do it.
+          LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
+            --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
+            --name create_logging-${{ github.run_number }} \
+            --query properties.outputs.outLogAnalyticsWorkspaceId.value | tr -d '"')
 
-      #     az deployment mg create \
-      #       --template-file src/mgDiagSettings.bicep \
-      #       --name create_mg_diag-${{ github.run_number }} \
-      #       --location "$location" \
-      #       --management-group-id "$managementGroupPrefix" \
-      #       --parameters parLogAnalyticsWorkspaceResourceId=$LOG_ANALYTICS_WORKSPACE_ID
+          az deployment mg create \
+            --template-file src/mgDiagSettings.bicep \
+            --name create_mg_diag-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix" \
+            --parameters parLogAnalyticsWorkspaceResourceId=$LOG_ANALYTICS_WORKSPACE_ID
 
-      # - name: Az CLI Deploy Hub Networking
-      #   id: create_hub_networking
-      #   shell: bash
-      #   run: |
-      #     az deployment sub create \
-      #       --template-file src/hubNetworking.bicep \
-      #       --name create_hub_networking-${{ github.run_number }} \
-      #       --location "$location" \
-      #       --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
+      - name: Az CLI Deploy Hub Networking
+        id: create_hub_networking
+        shell: bash
+        run: |
+          az deployment sub create \
+            --template-file src/hubNetworking.bicep \
+            --name create_hub_networking-${{ github.run_number }} \
+            --location "$location" \
+            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
