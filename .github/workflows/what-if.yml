@@ -35,51 +35,53 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           enable-AzPSSession: true
 
-      # have to use the CLI here because the native github action doesn't support tenant-scoped deployments
-      - name: Az CLI What-If Deploy Management Groups
-        id: test_create_mgs
-        shell: bash
-        # extra code to:
-        # - store the multiline output and retrieve it later. see
-        #   https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
-        # - fix up the \r / carriage return / ^M characters the pretty-printed output
-        #   shows. Files work with linebreaks, Variables don't seem to.
-        run: |
-          az deployment tenant what-if \
-            --template-file src/managementGroups.bicep \
-            --name test_create_mgs-${{ github.run_number }} \
-            --location "$location" \
-            | pipeline/github_output.sh
+      # # have to use the CLI here because the native github action doesn't support tenant-scoped deployments
+      # - name: Az CLI What-If Deploy Management Groups
+      #   id: test_create_mgs
+      #   shell: bash
+      #   # extra code to:
+      #   # - store the multiline output and retrieve it later. see
+      #   #   https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+      #   # - fix up the \r / carriage return / ^M characters the pretty-printed output
+      #   #   shows. Files work with linebreaks, Variables don't seem to.
+      #   run: |
+      #     az deployment tenant what-if \
+      #       --template-file src/managementGroups.bicep \
+      #       --name test_create_mgs-${{ github.run_number }} \
+      #       --location "$location" \
+      #       | pipeline/github_output.sh
 
-      # use the CLI from here on as well because the native action doesn't give us all
-      # CLI output
-      - name: Az CLI What-If Deploy Custom Policy Definitions
-        id: test_create_policy_defs
-        shell: bash
-        run: |
-          az deployment mg what-if \
-            --template-file src/customPolicyDefinitions.bicep \
-            --name test_create_policy_defs-${{ github.run_number }} \
-            --location "$location" \
-            --result-format ResourceIdOnly \
-            --management-group-id "$managementGroupPrefix" \
-            | pipeline/github_output.sh
+      # # use the CLI from here on as well because the native action doesn't give us all
+      # # CLI output
+      # - name: Az CLI What-If Deploy Custom Policy Definitions
+      #   id: test_create_policy_defs
+      #   shell: bash
+      #   run: |
+      #     az deployment mg what-if \
+      #       --template-file src/customPolicyDefinitions.bicep \
+      #       --name test_create_policy_defs-${{ github.run_number }} \
+      #       --location "$location" \
+      #       --result-format ResourceIdOnly \
+      #       --management-group-id "$managementGroupPrefix" \
+      #       | pipeline/github_output.sh
 
-      - name: Az CLI What-If Deploy Custom Role Definitions
-        id: test_create_role_defs
-        shell: bash
-        run: |
-          az deployment mg what-if \
-            --template-file src/customRoleDefinitions.bicep \
-            --name test_create_role_defs-${{ github.run_number }} \
-            --location "$location" \
-            --management-group-id "$managementGroupPrefix" \
-            | pipeline/github_output.sh
+      # - name: Az CLI What-If Deploy Custom Role Definitions
+      #   id: test_create_role_defs
+      #   shell: bash
+      #   run: |
+      #     az deployment mg what-if \
+      #       --template-file src/customRoleDefinitions.bicep \
+      #       --name test_create_role_defs-${{ github.run_number }} \
+      #       --location "$location" \
+      #       --management-group-id "$managementGroupPrefix" \
+      #       | pipeline/github_output.sh
 
       - name: Az CLI What-If Deploy Logging
         id: test_create_logging
         shell: bash
         run: |
+          az account set --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
+
           az deployment sub what-if \
             --template-file src/logging.bicep \
             --name test_create_logging-${{ github.run_number }} \
@@ -87,84 +89,84 @@ jobs:
             --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
             | pipeline/github_output.sh
 
-      - name: Az CLI What-If Deploy Management Group Diagnostic Settings
-        id: test_create_mg_diag
-        shell: bash
-        run: |
-          # log analytics workspace ID is a placeholder - no previous value to pull at
-          # this stage
-          az deployment mg what-if \
-            --template-file src/mgDiagSettings.bicep \
-            --name test_create_mg_diag-${{ github.run_number }} \
-            --location "$location" \
-            --management-group-id "$managementGroupPrefix" \
-            --parameters parLogAnalyticsWorkspaceResourceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-            | pipeline/github_output.sh
+      # - name: Az CLI What-If Deploy Management Group Diagnostic Settings
+      #   id: test_create_mg_diag
+      #   shell: bash
+      #   run: |
+      #     # log analytics workspace ID is a placeholder - no previous value to pull at
+      #     # this stage
+      #     az deployment mg what-if \
+      #       --template-file src/mgDiagSettings.bicep \
+      #       --name test_create_mg_diag-${{ github.run_number }} \
+      #       --location "$location" \
+      #       --management-group-id "$managementGroupPrefix" \
+      #       --parameters parLogAnalyticsWorkspaceResourceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+      #       | pipeline/github_output.sh
 
-      - name: Az CLI What-If Deploy Hub Networking
-        id: test_create_hub_networking
-        shell: bash
-        run: |
-          az deployment sub what-if \
-            --template-file src/hubNetworking.bicep \
-            --name test_create_hub_networking-${{ github.run_number }} \
-            --location "$location" \
-            --subscription "$CONNECTIVITY_SUBSCRIPTION_ID" \
-            | pipeline/github_output.sh
+      # - name: Az CLI What-If Deploy Hub Networking
+      #   id: test_create_hub_networking
+      #   shell: bash
+      #   run: |
+      #     az deployment sub what-if \
+      #       --template-file src/hubNetworking.bicep \
+      #       --name test_create_hub_networking-${{ github.run_number }} \
+      #       --location "$location" \
+      #       --subscription "$CONNECTIVITY_SUBSCRIPTION_ID" \
+      #       | pipeline/github_output.sh
 
-      - name: attach output to pull request
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v3
-        env:
-          BODY: |
-            Management Group changes:
+      # - name: attach output to pull request
+      #   if: github.event_name == 'pull_request'
+      #   uses: actions/github-script@v3
+      #   env:
+      #     BODY: |
+      #       Management Group changes:
 
-            ```
-            ${{ steps.test_create_mgs.outputs.OUTPUT }}
-            ```
-            Policy definition changes:
+      #       ```
+      #       ${{ steps.test_create_mgs.outputs.OUTPUT }}
+      #       ```
+      #       Policy definition changes:
 
-            ```
-            ${{ steps.test_create_policy_defs.outputs.OUTPUT }}
+      #       ```
+      #       ${{ steps.test_create_policy_defs.outputs.OUTPUT }}
             
-            ```
+      #       ```
 
-            Role definition changes:
+      #       Role definition changes:
 
-            ```
-            ${{ steps.test_create_role_defs.outputs.OUTPUT }}
+      #       ```
+      #       ${{ steps.test_create_role_defs.outputs.OUTPUT }}
             
-            ```
+      #       ```
 
-            Logging changes:
+      #       Logging changes:
 
-            ```
-            ${{ steps.test_create_logging.outputs.OUTPUT }}
+      #       ```
+      #       ${{ steps.test_create_logging.outputs.OUTPUT }}
             
-            ```
+      #       ```
 
-            Management Group Diagnostic Settings changes:
+      #       Management Group Diagnostic Settings changes:
 
-            ```
-            ${{ steps.test_create_mg_diag.outputs.OUTPUT }}
+      #       ```
+      #       ${{ steps.test_create_mg_diag.outputs.OUTPUT }}
             
-            ```
+      #       ```
 
-            Hub Networking changes:
+      #       Hub Networking changes:
 
-            ```
-            ${{ steps.test_create_hub_networking.outputs.OUTPUT }}
+      #       ```
+      #       ${{ steps.test_create_hub_networking.outputs.OUTPUT }}
             
-            ```
+      #       ```
             
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: process.env.BODY
-            })
+      #   with:
+      #     github-token: ${{secrets.GITHUB_TOKEN}}
+      #     script: |
+      #       github.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: process.env.BODY
+      #       })
       
 
