@@ -80,6 +80,8 @@ jobs:
         id: test_create_logging
         shell: bash
         run: |
+          echo "$MANAGEMENT_SUBSCRIPTION_ID"
+          echo $MANAGEMENT_SUBSCRIPTION_ID
           az account set --subscription "$MANAGEMENT_SUBSCRIPTION_ID"
 
           az deployment sub what-if \
