@@ -106,3 +106,19 @@ jobs:
             --name create_hub_networking-${{ github.run_number }} \
             --location "$location" \
             --subscription "$CONNECTIVITY_SUBSCRIPTION_ID"
+
+      - name: Az CLI Deploy Custom Policy Assignments
+        id: create_policy_assignments
+        shell: bash
+        run: |
+          LOG_ANALYTICS_WORKSPACE_ID=$(az deployment sub show \
+            --subscription "$MANAGEMENT_SUBSCRIPTION_ID" \
+            --name create_logging-${{ github.run_number }} \
+            --query properties.outputs.outLogAnalyticsWorkspaceId.value | tr -d '"')
+
+          az deployment mg create \
+            --template-file src/customPolicyAssignments.bicep \
+            --name create_policy_assignments-${{ github.run_number }} \
+            --location "$location" \
+            --management-group-id "$managementGroupPrefix" \
+            --parameters parLogAnalyticsWorkspaceResourceId=$LOG_ANALYTICS_WORKSPACE_ID

@@ -100,7 +100,7 @@ jobs:
             --name test_create_mg_diag-${{ github.run_number }} \
             --location "$location" \
             --management-group-id "$managementGroupPrefix" \
-            --parameters parLogAnalyticsWorkspaceResourceId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+            --parameters parLogAnalyticsWorkspaceResourceId=/subscriptions/xxx-xxx/resourceGroups/loggingResourceGroup/providers/Microsoft.OperationalInsights/workspaces/yyy-yyy \
             | pipeline/github_output.sh
 
       - name: Az CLI What-If Deploy Hub Networking
@@ -112,6 +112,19 @@ jobs:
             --name test_create_hub_networking-${{ github.run_number }} \
             --location "$location" \
             --subscription "$CONNECTIVITY_SUBSCRIPTION_ID" \
+            | pipeline/github_output.sh
+
+      - name: Az CLI What-If Deploy Custom Policy Assignments
+        id: test_create_policy_assignments
+        shell: bash
+        run: |
+          az deployment mg what-if \
+            --template-file src/customPolicyAssignments.bicep \
+            --name test_create_policy_assignments-${{ github.run_number }} \
+            --location "$location" \
+            --result-format ResourceIdOnly \
+            --management-group-id "$managementGroupPrefix" \
+            --parameters parLogAnalyticsWorkspaceResourceId=/subscriptions/xxx-xxx/resourceGroups/loggingResourceGroup/providers/Microsoft.OperationalInsights/workspaces/yyy-yyy \
             | pipeline/github_output.sh
 
       - name: attach output to pull request
@@ -158,6 +171,13 @@ jobs:
             ${{ steps.test_create_hub_networking.outputs.OUTPUT }}
             
             ```
+
+            Policy Assignment changes:
+
+            ```
+            ${{ steps.test_create_policy_assignments.outputs.OUTPUT }}
+            
+            ```            
             
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
